@@ -4,6 +4,8 @@ import Input from './components/input'
 import Button from './components/Button'
 import firebase from 'firebase'
 import Spinner from './components/Spinner'
+import { loginUser } from './actions'
+import { connect } from 'react-redux'
 
 class LoginForm extends Component {
   constructor(props) {
@@ -21,19 +23,20 @@ class LoginForm extends Component {
 
   onButtonPress() {
     const { email, password } = this.state
-    this.setState({
-      error: '',
-      loading: true,
-    })
-    firebase.auth().signInWithEmailAndPassword(email, password)
-      .then(() => this.onLoginSuccess())
-      .catch(() => {
-        firebase.auth().createUserWithEmailAndPassword(email, password)
-          .then(() => this.onLoginSuccess())
-          .catch(() => {
-            this.onLoginFailed()
-          })
-      })
+    this.props.loginUser(email, password)
+    // this.setState({
+    //   error: '',
+    //   loading: true,
+    // })
+    // firebase.auth().signInWithEmailAndPassword(email, password)
+    //   .then(() => this.onLoginSuccess())
+    //   .catch(() => {
+    //     firebase.auth().createUserWithEmailAndPassword(email, password)
+    //       .then(() => this.onLoginSuccess())
+    //       .catch(() => {
+    //         this.onLoginFailed()
+    //       })
+    //   })
   }
 
   onLoginSuccess() {
@@ -66,6 +69,7 @@ class LoginForm extends Component {
   }
 
   render(){
+    console.log('props.loginUser', this.props.loginUser)
     const { email, password, error } = this.state
 
     return(
@@ -97,7 +101,9 @@ class LoginForm extends Component {
   }
 }
 
-export default LoginForm
+export default connect(null, {
+  loginUser,
+})(LoginForm)
 
 const styles = StyleSheet.create({
   hintStyle: {
@@ -105,7 +111,6 @@ const styles = StyleSheet.create({
   },
   hintContainer: {
     width: '100%',
-    //height: 20,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
